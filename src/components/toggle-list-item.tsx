@@ -17,7 +17,7 @@ export function ToggleListItem({ title, description }: ToggleListItemProps) {
     <div className="flex items-center justify-between p-4 rounded-lg bg-gray-50 dark:bg-gray-700/50 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
       <div className="flex-1">
         <h3 className="font-medium text-gray-900 dark:text-white mb-1">{title}</h3>
-        <p className="text-sm text-gray-500 dark:text-gray-400">{description}</p>
+        <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-1">{description}</p>
         {enabled && (
           <div className="mt-2 flex items-center gap-2">
             <label className="text-sm text-gray-500 dark:text-gray-400">

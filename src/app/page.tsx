@@ -3,7 +3,7 @@
 import { ListContainer } from '@/components/list-container';
 import { ListItem } from '@/components/list-item';
 import { ToggleListItem } from '@/components/toggle-list-item';
-import { Boxes, ShieldCheck, Plus } from 'lucide-react';
+import { Boxes, Plus, AlignLeft } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
@@ -20,7 +20,6 @@ import {
   CommandItem,
 } from "@/components/ui/command"
 import { MultiSelect } from "@/components/multi-select";
-import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 
 const items = [
@@ -56,13 +55,10 @@ export default function Home() {
 
   const handleNext = () => {
     if (currentPage === selectedCategories.length - 1) {
-      // Last page - close modal and reset states
+      // Last page - close modal
       setOpen(false);
       setIsInputPhase(false);
       setCurrentPage(0);
-      setSelectedCategories([]);
-      setCategoryInputs({});
-      console.log('Final inputs:', categoryInputs);
     } else {
       setCurrentPage(prev => prev + 1);
     }
@@ -200,7 +196,7 @@ export default function Home() {
         
         <div className="grid md:grid-cols-2 gap-8">
           <ListContainer
-            title="Notificaciones"
+            title="Mensajes"
             icon={<Boxes className="w-5 h-5 text-indigo-500" />}
           >
             {items.map((item) => (
@@ -213,14 +209,14 @@ export default function Home() {
           </ListContainer>
 
           <ListContainer
-            title="Configuración"
-            icon={<ShieldCheck className="w-5 h-5 text-emerald-500" />}
+            title="Categorías"
+            icon={<AlignLeft className="w-5 h-5 text-emerald-500" />}
           >
-            {toggleItems.map((item) => (
+            {selectedCategories.map((item) => (
               <ToggleListItem
-                key={item.id}
-                title={item.title}
-                description={item.description}
+                key={item}
+                title={item}
+                description={categoryInputs[item] || ""}
               />
             ))}
           </ListContainer>
