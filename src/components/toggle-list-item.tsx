@@ -6,12 +6,22 @@ import { useState } from "react";
 interface ToggleListItemProps {
   title: string;
   description: string;
+  active: boolean;
+  onToggle: (active: boolean) => Promise<void>;
 }
 
-export function ToggleListItem({ title, description }: ToggleListItemProps) {
-  const [enabled, setEnabled] = useState(false);
+export function ToggleListItem({ title, description, active, onToggle }: ToggleListItemProps) {
+  const [enabled, setEnabled] = useState(active);
   const [hasTime, setHasTime] = useState(false);
   const [time, setTime] = useState("12:00");
+
+  const handleToggle = async (checked: boolean) => {
+    setEnabled(checked);
+    if (!checked) {
+      setHasTime(false);
+    }
+    await onToggle(checked);
+  };
 
   return (
     <div className="flex items-center justify-between p-4 rounded-lg bg-gray-50 dark:bg-gray-700/50 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
@@ -42,12 +52,7 @@ export function ToggleListItem({ title, description }: ToggleListItemProps) {
       </div>
       <Switch
         checked={enabled}
-        onCheckedChange={(checked) => {
-          setEnabled(checked);
-          if (!checked) {
-            setHasTime(false);
-          }
-        }}
+        onCheckedChange={handleToggle}
         className="ml-4"
       />
     </div>

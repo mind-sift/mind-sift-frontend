@@ -4,6 +4,7 @@ import { ListContainer } from '@/components/list-container';
 import { ListItem } from '@/components/list-item';
 import { ToggleListItem } from '@/components/toggle-list-item';
 import { Boxes, Plus, AlignLeft } from 'lucide-react';
+import { useEffect } from 'react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
@@ -22,7 +23,13 @@ import {
 import { MultiSelect } from "@/components/multi-select";
 import { Textarea } from "@/components/ui/textarea";
 
-const items = [
+interface ListItemType {
+  id: number
+  title: string
+  description: string
+}
+
+const demoItems: ListItemType[] = [
   { id: 1, title: 'Project Planning', description: 'Define project scope and objectives' },
   { id: 2, title: 'Design Phase', description: 'Create wireframes and mockups' },
   { id: 3, title: 'Development', description: 'Implement core functionality' },
@@ -30,13 +37,11 @@ const items = [
   { id: 5, title: 'Deployment', description: 'Launch to production environment' },
 ];
 
-const toggleItems = [
-  { id: 1, title: 'Email Notifications', description: 'Receive updates via email' },
-  { id: 2, title: 'Dark Mode', description: 'Toggle dark theme interface' },
-  { id: 3, title: 'Auto-save', description: 'Automatically save changes' },
-  { id: 4, title: 'Two-factor Auth', description: 'Enhanced security option' },
-  { id: 5, title: 'Public Profile', description: 'Show profile to others' },
-];
+interface CategoryData {
+  name: string
+  description: string
+  active: boolean
+}
 
 export default function Home() {
   const [open, setOpen] = useState(false);
@@ -44,18 +49,48 @@ export default function Home() {
   const [searchValue, setSearchValue] = useState("");
   const [isInputPhase, setIsInputPhase] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
-  const [categoryInputs, setCategoryInputs] = useState<Record<string, string>>({});
+  const [categoryInputs, setCategoryInputs] = useState<Record<string, {description: string, active: boolean}>>({});
+
+  useEffect(() => {
+    fetch('/api/categories')
+      .then(res => res.json())
+      .then((data: CategoryData[]) => {
+        setSelectedCategories(data.map(item => item.name));
+        
+        const inputs = data.reduce<Record<string, {description: string, active: boolean}>>((acc, item) => ({
+          ...acc,
+          [item.name]: {
+            description: item.description,
+            active: item.active
+          }
+        }), {});
+        setCategoryInputs(inputs);
+      });
+  }, []);
 
   const handleInputChange = (category: string, value: string) => {
     setCategoryInputs(prev => ({
       ...prev,
-      [category]: value
+      [category]: {
+        ...prev[category],
+        description: value
+      }
     }));
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (currentPage === selectedCategories.length - 1) {
-      // Last page - close modal
+      const categories = selectedCategories.map(category => ({
+        name: category,
+        description: categoryInputs[category]?.description || '',
+        active: categoryInputs[category]?.active ?? false
+      }));
+
+      await fetch('/api/categories', {
+        method: 'POST',
+        body: JSON.stringify(categories)
+      });
+      
       setOpen(false);
       setIsInputPhase(false);
       setCurrentPage(0);
@@ -166,7 +201,7 @@ export default function Home() {
                       </label>
                       <Textarea
                         placeholder={`Ingrese descripción para definir la categoría ${selectedCategories[currentPage]}`}
-                        value={categoryInputs[selectedCategories[currentPage]] || ""}
+                        value={categoryInputs[selectedCategories[currentPage]]?.description || ""}
                         onChange={(e) => handleInputChange(selectedCategories[currentPage], e.target.value)}
                         className="min-h-[150px]"
                       />
@@ -183,7 +218,7 @@ export default function Home() {
                       onClick={handleNext}
                       variant="default"
                       className="bg-indigo-600 hover:bg-indigo-700 text-white"
-                      disabled={!categoryInputs[selectedCategories[currentPage]]?.trim()}
+                      disabled={!categoryInputs[selectedCategories[currentPage]]?.description?.trim()}
                     >
                       {currentPage === selectedCategories.length - 1 ? 'Confirmar' : 'Continuar'}
                     </Button>
@@ -199,7 +234,7 @@ export default function Home() {
             title="Mensajes"
             icon={<Boxes className="w-5 h-5 text-indigo-500" />}
           >
-            {items.map((item) => (
+            {demoItems.map((item) => (
               <ListItem
                 key={item.id}
                 title={item.title}
@@ -216,7 +251,22 @@ export default function Home() {
               <ToggleListItem
                 key={item}
                 title={item}
-                description={categoryInputs[item] || ""}
+                description={categoryInputs[item]?.description || ""}
+                active={categoryInputs[item]?.active || false}
+                onToggle={async (active) => {
+                  setCategoryInputs(prev => ({
+                    ...prev,
+                    [item]: {
+                      ...prev[item],
+                      active
+                    }
+                  }));
+                  
+                  await fetch('/api/categories', {
+                    method: 'PUT',
+                    body: JSON.stringify({ name: item, active })
+                  });
+                }}
               />
             ))}
           </ListContainer>
