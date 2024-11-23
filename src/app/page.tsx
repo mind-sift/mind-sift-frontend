@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/command"
 import { MultiSelect } from "@/components/multi-select";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 
 const items = [
   { id: 1, title: 'Project Planning', description: 'Define project scope and objectives' },
@@ -154,7 +155,7 @@ export default function Home() {
                         setCurrentPage(0);
                       }}
                       variant="default"
-                      className="bg-indigo-600 hover:bg-indigo-700"
+                      className="bg-indigo-600 hover:bg-indigo-700 text-white"
                     >
                       Siguiente
                     </Button>
@@ -167,10 +168,11 @@ export default function Home() {
                       <label className="text-sm font-medium">
                         {`Página ${currentPage + 1} de ${selectedCategories.length}`}
                       </label>
-                      <Input
+                      <Textarea
                         placeholder={`Ingrese descripción para definir la categoría ${selectedCategories[currentPage]}`}
                         value={categoryInputs[selectedCategories[currentPage]] || ""}
                         onChange={(e) => handleInputChange(selectedCategories[currentPage], e.target.value)}
+                        className="min-h-[150px]"
                       />
                     </div>
                   </div>
@@ -184,7 +186,7 @@ export default function Home() {
                     <Button 
                       onClick={handleNext}
                       variant="default"
-                      className="bg-indigo-600 hover:bg-indigo-700"
+                      className="bg-indigo-600 hover:bg-indigo-700 text-white"
                       disabled={!categoryInputs[selectedCategories[currentPage]]?.trim()}
                     >
                       {currentPage === selectedCategories.length - 1 ? 'Confirmar' : 'Continuar'}
