@@ -5,8 +5,25 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Dual List View",
-  description: "A beautiful dual list view with toggles",
+  title: "Mind Sift Dashboard",
+  description: "The dashboard where you can manage your notifications",
+  icons: {
+    icon: [
+      {
+        url: "/favicon.ico",
+        sizes: "any",
+      },
+      {
+        url: "/icon.png",
+        type: "image/png",
+        sizes: "32x32",
+      },
+    ],
+    apple: {
+      url: "/apple-touch-icon.png",
+      sizes: "180x180",
+    },
+  },
 };
 
 export default function RootLayout({
