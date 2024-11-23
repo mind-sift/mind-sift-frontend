@@ -1,3 +1,8 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.tabs-list [data-state='active'] {
+  background-color: #4F46E5 !important; /* Indigo-600 */
+  color: white !important;
+}
