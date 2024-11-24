@@ -47,7 +47,8 @@ export async function POST(request: Request) {
       .upsert({
         name: category.name,
         description: category.description,
-        active: category.active
+        active: category.active,
+        type: "fixed",
       })
   )
   
