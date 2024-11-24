@@ -58,4 +58,26 @@ export async function POST(request: Request) {
   } catch {
     return NextResponse.json({ error: 'Failed to update categories' }, { status: 500 })
   }
-} 
+}
+
+export async function DELETE(request: Request) {
+  const supabase = await createClient()
+  const body = await request.json()
+
+  // Ensure name is provided
+  if (!body.name) {
+    return NextResponse.json({ error: 'Name is required' }, { status: 400 })
+  }
+
+  // Delete the record
+  const { error } = await supabase
+    .from('categoriesConfig')
+    .delete()
+    .eq('name', body.name)
+
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 })
+  }
+
+  return NextResponse.json({ success: true })
+}
