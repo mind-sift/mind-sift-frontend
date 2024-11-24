@@ -261,7 +261,7 @@ export default function Home() {
             title="Mensajes"
             icon={<Boxes className="w-5 h-5 text-indigo-500" />}
           >
-            {messages.map((item) => (
+            {messages.slice().reverse().map((item) => (
               <ListItem
                 key={item.pk}
                 title={item.title}
