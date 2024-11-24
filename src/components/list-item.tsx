@@ -19,7 +19,7 @@ export function ListItem({ title, app, description, dismissable, reason, confide
         <h3 className="font-medium text-gray-900">{app}</h3>
       </div>
       <p className="text-sm text-gray-600 my-2">{description}</p>
-      <p className="text-xs text-gray-500">Confianza: {(confidence * 100).toFixed(0)}%</p>
+      <p className="text-xs text-gray-500">Confianza: {(confidence as number * 100).toFixed(0)}%</p>
       <p className="text-xs text-gray-500">Razón: {reason}</p>
     </div>
   );
