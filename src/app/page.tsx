@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/command"
 import { MultiSelect } from "@/components/multi-select";
 import { Textarea } from "@/components/ui/textarea";
+import { supabase } from '@/app/utils/supabase/supabaseClient'
 
 interface ListItemType {
   id: number
@@ -43,6 +44,16 @@ interface CategoryData {
   active: boolean
 }
 
+type Message = {
+  pk: number;
+  app: string;
+  title: string;
+  message: string;
+  is_dismissable: boolean;
+  reason: string;
+  confidence: number;
+}
+
 export default function Home() {
   const [open, setOpen] = useState(false);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
@@ -50,6 +61,7 @@ export default function Home() {
   const [isInputPhase, setIsInputPhase] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
   const [categoryInputs, setCategoryInputs] = useState<Record<string, {description: string, active: boolean}>>({});
+  const [messages, setMessages] = useState<Message[]>([]);
 
   useEffect(() => {
     fetch('/api/categories')
@@ -66,6 +78,21 @@ export default function Home() {
         }), {});
         setCategoryInputs(inputs);
       });
+  }, []);
+
+  useEffect(() => {
+    const channel = supabase
+      .channel('realtime-messages')
+      .on('postgres_changes', { event: "*", schema: 'public', table: 'messages' },
+        (payload) => {
+          const message = payload.new as Message;
+          console.log('debug', 'change received', message);
+          setMessages((prev) => [...prev, message]);
+        }
+      ).subscribe();
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   const handleInputChange = (category: string, value: string) => {
@@ -113,7 +140,7 @@ export default function Home() {
       <div className="w-full">
         <div className="flex items-center justify-between mb-8">
           <div className="w-16"></div>
-          <h1 className="text-4xl font-bold text-gray-900 dark:text-white text-center">
+          <h1 className="text-5xl font-bold text-gray-900 dark:text-white text-center">
             Mind Sift Dashboard
           </h1>
           <Dialog open={open} onOpenChange={setOpen}>
@@ -234,11 +261,15 @@ export default function Home() {
             title="Mensajes"
             icon={<Boxes className="w-5 h-5 text-indigo-500" />}
           >
-            {demoItems.map((item) => (
+            {messages.map((item) => (
               <ListItem
-                key={item.id}
+                key={item.pk}
                 title={item.title}
-                description={item.description}
+                app={item.app}
+                description={item.message}
+                dismissable={item.is_dismissable}
+                reason={item.reason}
+                confidence={item.confidence}
               />
             ))}
           </ListContainer>
@@ -249,7 +280,7 @@ export default function Home() {
           >
             {selectedCategories.map((item) => (
               <ToggleListItem
-                key={item}
+                key={Math.random()}
                 title={item}
                 description={categoryInputs[item]?.description || ""}
                 active={categoryInputs[item]?.active || false}

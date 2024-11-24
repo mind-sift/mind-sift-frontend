@@ -30,15 +30,6 @@ export function ToggleListItem({ title, description, active, onToggle }: ToggleL
         <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-1">{description}</p>
         {enabled && (
           <div className="mt-2 flex items-center gap-2">
-            <label className="text-sm text-gray-500 dark:text-gray-400">
-              <input
-                type="checkbox"
-                checked={hasTime}
-                onChange={(e) => setHasTime(e.target.checked)}
-                className="mr-2"
-              />
-              Set time
-            </label>
             {hasTime && (
               <input
                 type="time"
