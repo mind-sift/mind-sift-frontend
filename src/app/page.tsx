@@ -298,6 +298,17 @@ export default function Home() {
                     body: JSON.stringify({ name: item, active })
                   });
                 }}
+                onTrash={async () => {
+                  setSelectedCategories(prev => prev.filter(category => category !== item));
+                  setCategoryInputs(prev => {
+                    const { [item]: _, ...rest } = prev;
+                    return rest;
+                  });
+                  await fetch('/api/categories', {
+                    method: 'DELETE',
+                    body: JSON.stringify({ name: item })
+                  });
+                }}
               />
             ))}
           </ListContainer>
