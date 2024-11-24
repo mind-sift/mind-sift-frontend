@@ -1,6 +1,6 @@
 interface ListItemProps {
   title: string;
-  app: string;
+  app: string; 
   description: string;
   dismissable?: boolean;
   reason?: string;
